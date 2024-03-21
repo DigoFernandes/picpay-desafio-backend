@@ -1,4 +1,4 @@
-package br.com.digofernandes.picpaydesafiobackend.wallet;
+package br.com.digofernandes.picpaydesafiobackend.transaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
