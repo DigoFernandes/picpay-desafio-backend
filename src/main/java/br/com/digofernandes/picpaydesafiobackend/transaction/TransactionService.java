@@ -3,6 +3,7 @@ package br.com.digofernandes.picpaydesafiobackend.transaction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.digofernandes.picpaydesafiobackend.authorization.AuthorizerService;
 import br.com.digofernandes.picpaydesafiobackend.exception.InvalidTransactionException;
 import br.com.digofernandes.picpaydesafiobackend.wallet.Wallet;
 import br.com.digofernandes.picpaydesafiobackend.wallet.WalletRepository;
@@ -12,10 +13,13 @@ import br.com.digofernandes.picpaydesafiobackend.wallet.WalletType;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
+    private final AuthorizerService authorizerService;
 
-    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository) {
+    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository, 
+            AuthorizerService authorizerService) {
         this.transactionRepository = transactionRepository;
         this.walletRepository = walletRepository;
+        this.authorizerService = authorizerService;
     }
 
     @Transactional
@@ -29,7 +33,7 @@ public class TransactionService {
         var wallet = walletRepository.findById(transaction.payer()).get();
         walletRepository.save(wallet.debit(transaction.value()));
         // 4 - chamar serviços externos
-
+        authorizerService.authorize(transaction);
         return newTransaction;
     }
 
